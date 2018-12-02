@@ -17,7 +17,7 @@ class User
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=190, unique=true)
      */
     private $username;
 
@@ -27,7 +27,7 @@ class User
     private $password;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=190, unique=true)
      */
     private $email;
 
