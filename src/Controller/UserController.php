@@ -147,9 +147,9 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/logout", name="logout")
+     * @Route("/logout_all", name="logout_all")
      */
-    public function logout(EntityManagerInterface $em)
+    public function logout_all(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
 
