@@ -47,9 +47,9 @@ class User
     private $hospital;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", options={"default": 1})
      */
-    private $is_valid;
+    private $is_valid = TRUE;
 
     /**
      * @ORM\Column(type="date", nullable=true)
