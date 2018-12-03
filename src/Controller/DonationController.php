@@ -79,6 +79,88 @@ class DonationController extends AbstractController
     }
 
     /**
+     * @Route("/edit_donation", name="edit_donation")
+     */
+    public function edit_donation(EntityManagerInterface $em)
+    {
+        $request = Request::createFromGlobals();
+
+        $token = $request->request->get('token');
+        $donation_id = $request->request->get('donation_id');
+        $name = $request->request->get('name');
+        $requested_quantity = $request->request->get('requested_quantity');
+        $hospital = $request->request->get('hospital');
+        $blood_type = $request->request->get('blood_type');
+
+        if (!$token) {
+            return $this->json([
+                'error' => 'You must be logged in to add a donation request.'
+            ]);
+        }
+
+        if (!$name) {
+            return $this->json([
+                'error' => 'No donation name supplied'
+            ]);
+        }
+
+        if (!$requested_quantity) {
+            return $this->json([
+                'error' => 'No requested quantity supplied'
+            ]);
+        }
+
+        if (!$blood_type) {
+            return $this->json([
+                'error' => 'No blood type supplied'
+            ]);
+        }
+
+        if (!$hospital) {
+            return $this->json([
+                'error' => 'No hospital name supplied'
+            ]);
+        }
+
+        /* Get the user associated to the token */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        /* No user with this token was found. Probably a forged request, or database malfunction */
+        if (!$user || !in_array($user->getType(), ["doctor", "admin", "center"])) {
+            return $this->json([
+                'error' => 'You are not authorized to edit a donation request.'
+            ]);
+        }
+
+        /* Get donation from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donation = $donation_repo->find($donation_id);
+
+        if (!$donation) {
+            return $this->json([
+                'error' => 'Donation not found in database.'
+            ]);
+        }
+
+        /* Modify donation */
+        $donation->setName($name);
+        $donation->setHospital($hospital);
+        $donation->setRequestedQuantity(floatval($requested_quantity));
+        $donation->setBloodType($blood_type);
+
+        /* Write modifications to database */
+        $em->persist($donation);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'Donation edited successfully!'
+        ]);
+    }
+
+    /**
      * @Route("/available_donations", name="all_donations")
      */
     public function all_donations()
