@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -60,6 +62,16 @@ class User
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $jwt;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Donation", mappedBy="user", orphanRemoval=true)
+     */
+    private $donations;
+
+    public function __construct()
+    {
+        $this->donations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -170,6 +182,37 @@ class User
     public function setJwt(?string $jwt): self
     {
         $this->jwt = $jwt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Donation[]
+     */
+    public function getDonations(): Collection
+    {
+        return $this->donations;
+    }
+
+    public function addDonation(Donation $donation): self
+    {
+        if (!$this->donations->contains($donation)) {
+            $this->donations[] = $donation;
+            $donation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDonation(Donation $donation): self
+    {
+        if ($this->donations->contains($donation)) {
+            $this->donations->removeElement($donation);
+            // set the owning side to null (unless already changed)
+            if ($donation->getUser() === $this) {
+                $donation->setUser(null);
+            }
+        }
 
         return $this;
     }
