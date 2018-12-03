@@ -58,6 +58,23 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
   **Return on success**
     * {'**message**': 'Donation added successfully!'}
 
+* ### /edit_donation
+  **Role:** Edits a donation in the database. User must be logged in and must be either a "doctor", an "admin" or a "center". Donation must exist in the database.
+
+  **Request type:** POST
+
+  Donation will be identified by **ID only**! The other fields represent the new values that will replace the donation's fields.
+  **Request body:**
+    * **token** - _mandatory_. The user token received when logging in.
+    * **donation_id** - _mandatory_. The id of the donation that will be changed.
+    * **name** - _mandatory_. The new donation name.
+    * **hospital** - _mandatory_. The new hospital name.
+    * **requested_quantity** - _mandatory_. The new quantity of blood that the receiver needs, in litres.
+    * **blood_type** - _mandatory_. The new necessary blood type.
+
+  **Return on success**
+    * {'**message**': 'Donation edited successfully!'}
+
 * ### /available_donations
   **Role:** Get all donations from database
 
