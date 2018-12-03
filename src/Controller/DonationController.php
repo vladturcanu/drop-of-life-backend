@@ -91,20 +91,6 @@ class DonationController extends AbstractController
     }
 
     /**
-     * @Route("/available_donations/hospital/{hospital}", name="hospital_donations")
-     */
-    public function hospital_donations(string $hospital)
-    {
-        /* Get donations for the specified hospital from database */
-        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
-        $donations = $donation_repo->findBy([
-            'hospital' => $hospital
-        ]);
-
-        return $this->jsonify_donations_array($donations);
-    }
-
-    /**
      * @Route("/available_donations/blood_type/{blood_type}", name="blood_type_donations")
      */
     public function blood_type_donations(string $blood_type)
@@ -113,6 +99,30 @@ class DonationController extends AbstractController
         $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
         $donations = $donation_repo->findBy([
             'blood_type' => $blood_type
+        ]);
+
+        return $this->jsonify_donations_array($donations);
+    }
+
+    /**
+     * @Route("/available_donations/hospital", name="hospital_donations")
+     */
+    public function hospital_donations()
+    {
+        /* Get hospital name from request body */
+        $request = Request::createFromGlobals();
+        $hospital = $request->request->get('hospital');
+
+        if (!$hospital) {
+            return $this->json([
+                'error' => 'Please specify hospital name'
+            ]);
+        }
+
+        /* Get donations for the specified hospital from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donations = $donation_repo->findBy([
+            'hospital' => $hospital
         ]);
 
         return $this->jsonify_donations_array($donations);
