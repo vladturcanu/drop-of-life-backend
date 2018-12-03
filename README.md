@@ -43,3 +43,144 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
 
   **Return on success**
     * {'**message**': 'Logout successful!'}
+
+* ### /add_donation
+  **Role:** Adds a donation to the database. User must be logged in and must be a doctor.
+
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_. The user token received when logging in.
+    * **name** - _mandatory_. Donation name.
+    * **requested_quantity** - _mandatory_. The quantity of blood that the receiver needs, in litres.
+    * **blood_type** - _mandatory_. The necessary blood type.
+
+  **Return on success**
+    * {'**message**': 'Donation added successfully!'}
+
+* ### /available_donations
+  **Role:** Get all donations from database
+
+  **Request type:** GET
+
+  **Return on success**
+    * JSON array of donations, that looks like this:
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "Fatau Jigi",
+          "requested_quantity": 40.5,
+          "existing_quantity": 0,
+          "donations_count": 0,
+          "hospital": "Floreasca",
+          "blood_type": "AB",
+          "creation_date": {
+            "date": "2018-12-03 00:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "Europe/Helsinki"
+          },
+          "last_donation_date": null
+        },
+        {
+          ...
+        }, ...
+      ]
+      ```
+
+* ### /available_donations/blood_type/{blood_type}
+  **Role:** Get all donations from database that match the specified blood type
+
+  **Request type:** GET
+
+  **Return on success**
+    * JSON array of donations, that looks like this:
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "Fatau Jigi",
+          "requested_quantity": 40.5,
+          "existing_quantity": 0,
+          "donations_count": 0,
+          "hospital": "Floreasca",
+          "blood_type": "AB",
+          "creation_date": {
+            "date": "2018-12-03 00:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "Europe/Helsinki"
+          },
+          "last_donation_date": null
+        },
+        {
+          ...
+        }, ...
+      ]
+      ```
+
+* ### /available_donations/hospital
+  **Role:** Get all donations from database that match the specified hospital
+
+  **Request type:** POST
+
+  **Request body:**
+    * **hospital** - _mandatory_. The hospital to search for.
+
+  **Return on success**
+    * JSON array of donations, that looks like this:
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "Fatau Jigi",
+          "requested_quantity": 40.5,
+          "existing_quantity": 0,
+          "donations_count": 0,
+          "hospital": "Floreasca",
+          "blood_type": "AB",
+          "creation_date": {
+            "date": "2018-12-03 00:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "Europe/Helsinki"
+          },
+          "last_donation_date": null
+        },
+        {
+          ...
+        }, ...
+      ]
+      ```
+
+* ### /available_donations/name
+  **Role:** Get all donations from database that match the specified name
+
+  **Request type:** POST
+
+  **Request body:**
+    * **name** - _mandatory_. The name to search for.
+
+  **Return on success**
+    * JSON array of donations, that looks like this:
+      ```json
+      [
+        {
+          "id": 1,
+          "name": "Fatau Jigi",
+          "requested_quantity": 40.5,
+          "existing_quantity": 0,
+          "donations_count": 0,
+          "hospital": "Floreasca",
+          "blood_type": "AB",
+          "creation_date": {
+            "date": "2018-12-03 00:00:00.000000",
+            "timezone_type": 3,
+            "timezone": "Europe/Helsinki"
+          },
+          "last_donation_date": null
+        },
+        {
+          ...
+        }, ...
+      ]
+      ```
+            
