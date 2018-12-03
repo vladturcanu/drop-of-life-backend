@@ -77,4 +77,31 @@ class DonationController extends AbstractController
             'message' => 'Donation added successfully!'
         ]);
     }
+
+    /**
+     * @Route("/all_donations", name="all_donations")
+     */
+    public function all_donations()
+    {
+        /* Get all donations from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donations = $donation_repo->findAll();
+
+        /* Create JSON with donations */
+        $return_json = [];
+        foreach ($donations as $donation) {
+            array_push($return_json, [
+                'id' => $donation->getId(),
+                'name' => $donation->getName(),
+                'requested_quantity' => $donation->getRequestedQuantity(),
+                'existing_quantity' => $donation->getExistingQuantity(),
+                'hospital' => $donation->getHospital(),
+                'blood_type' => $donation->getBloodType(),
+                'creation_date' => $donation->getCreationDate(),
+                'last_donation_date' => $donation->getLastDonationDate()
+            ]);
+        }
+
+        return $this->json($return_json);
+    }
 }
