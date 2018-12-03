@@ -200,4 +200,18 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
         }, ...
       ]
       ```
+      
+* ### /donate
+  **Role:** Donate blood for a request. Can submit donation for self, or can specify another user id, to submit donation for someone else.
+
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_.
+    * **user_id** - _optional_. If specified, the donation will be made by this user.
+    * **donation_id** - _mandatory_.
+    * **quantity** - _mandatory_. Quantity of blood to donate. Float.
+
+  **Return on success**
+    * {'**message**': 'You have donated successfully!'}
             
