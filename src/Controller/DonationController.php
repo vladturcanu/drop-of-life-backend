@@ -79,7 +79,7 @@ class DonationController extends AbstractController
     }
 
     /**
-     * @Route("/all_donations", name="all_donations")
+     * @Route("/available_donations", name="all_donations")
      */
     public function all_donations()
     {
@@ -87,9 +87,46 @@ class DonationController extends AbstractController
         $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
         $donations = $donation_repo->findAll();
 
-        /* Create JSON with donations */
+        return $this->jsonify_donations_array($donations);
+    }
+
+    /**
+     * @Route("/available_donations/hospital/{hospital}", name="hospital_donations")
+     */
+    public function hospital_donations(string $hospital)
+    {
+        /* Get all donations from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donations = $donation_repo->findBy([
+            'hospital' => $hospital
+        ]);
+
+        return $this->jsonify_donations_array($donations);
+    }
+
+    /**
+     * @Route("/available_donations/blood_type/{blood_type}", name="blood_type_donations")
+     */
+    public function blood_type_donations(string $blood_type)
+    {
+        /* Get all donations from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donations = $donation_repo->findBy([
+            'blood_type' => $blood_type
+        ]);
+
+        return $this->jsonify_donations_array($donations);
+    }
+
+    /**
+     * Create JSON with donations
+     *
+     * @param Array $donations_array
+     * @return string JSON of the specified donations
+     */
+    protected function jsonify_donations_array($donations_array) {
         $return_json = [];
-        foreach ($donations as $donation) {
+        foreach ($donations_array as $donation) {
             array_push($return_json, [
                 'id' => $donation->getId(),
                 'name' => $donation->getName(),
