@@ -235,6 +235,101 @@ class DonationController extends AbstractController
     }
 
     /**
+     * @Route("/donate", name="donate")
+     */
+    public function donate(EntityManagerInterface $em)
+    {
+        /* TODO: Test this functionality! */
+        $request = Request::createFromGlobals();
+        $token = $request->request->get('token');
+        $donation_id = $request->request->get('donation_id');
+        $quantity = $request->request->get('quantity');
+
+        /* Can specify a donor_id in post, if we are submitting a donation for another user */
+        $donor_id = $request->request->get('donor_id');
+
+        if (!$token) {
+            return $this->json([
+                'error' => 'You must be logged in, in order to register a donation.'
+            ]);
+        }
+        if (!$donation_id) {
+            return $this->json([
+                'error' => 'Donation not specified.'
+            ]);
+        }
+        if (!$quantity || floatval($quantity) < 0) {
+            return $this->json([
+                'error' => 'Quantity must be greater than 0.'
+            ]);
+        }
+
+        /* Get donation from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donation = $donation_repo->find($donation_id);
+
+        if (!$donation) {
+            return $this->json([
+                'error' => 'Donation not found.'
+            ]);
+        }
+
+        /* Get the user associated to the token */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        /* No user with this token was found. Probably a forged request, or database malfunction */
+        if (!$user) {
+            return $this->json([
+                'error' => 'Could not verify your login credentials. Please log in again.'
+            ]);
+        }
+
+        /* If the donor_id was specified, submit donation for the specified user. */
+        if ($donor_id) {
+            $specified_user = $user_repo->find($donor_id);
+            if ($specified_user) {
+                $user = $specified_user;
+            } else {
+                return $this->json([
+                    'error' => 'Could not find donor in database.'
+                ]);
+            }
+
+            /* Check that the specified user has the required blood type (case-insensitive) */
+            if ($specified_user->getBloodType() != $donation->getBloodType()) {
+                return $this->json([
+                    'error' => 'Specified user does not have the required blood type.'
+                ]);
+            }
+        }
+
+        /* Add blood to donation */
+        $existing_quantity = $donation->getExistingQuantity();
+        $donation->setExistingQuantity($existing_quantity + floatval($quantity));
+
+        /* Set last donation date to today for both the donation and the user */
+        $date = new \DateTime('now');
+        $donation->setLastDonationDate($date);
+        $user->setLastDonationDate($date);
+
+        /* Increment the number of donations for this request */
+        $donations_count = $donation->getDonationsCount();
+        $donations->setDonationsCount($donations_count + 1);
+
+        /* Write modifications to database */
+        $em->persist($donation);
+        $em->persist($user);
+        $em->flush();
+
+        return $this->json([
+            'message' => 'You have donated successfully!'
+        ]);
+    }
+
+    /**
      * Create JSON with donations
      *
      * @param Array $donations_array

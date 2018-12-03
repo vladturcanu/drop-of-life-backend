@@ -84,6 +84,12 @@ class UserController extends AbstractController
         $user->setEmail($email);
         $user->setType($type);
 
+        if ($blood_type)
+            $user->setBloodType($blood_type);
+
+        if ($hospital)
+            $user->setHospital($hospital);
+
         $em->persist($user);
         $em->flush();
 
