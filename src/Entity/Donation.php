@@ -57,6 +57,11 @@ class Donation
      */
     private $last_donation_date;
 
+    /**
+     * @ORM\Column(type="integer", options={"default": 0}, nullable=true)
+     */
+    private $donations_count = 0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -154,6 +159,18 @@ class Donation
     public function setLastDonationDate(?\DateTimeInterface $last_donation_date): self
     {
         $this->last_donation_date = $last_donation_date;
+
+        return $this;
+    }
+
+    public function getDonationsCount(): ?int
+    {
+        return $this->donations_count;
+    }
+
+    public function setDonationsCount(?int $donations_count): self
+    {
+        $this->donations_count = $donations_count;
 
         return $this;
     }

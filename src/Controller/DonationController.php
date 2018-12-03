@@ -95,7 +95,7 @@ class DonationController extends AbstractController
      */
     public function hospital_donations(string $hospital)
     {
-        /* Get all donations from database */
+        /* Get donations for the specified hospital from database */
         $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
         $donations = $donation_repo->findBy([
             'hospital' => $hospital
@@ -109,10 +109,34 @@ class DonationController extends AbstractController
      */
     public function blood_type_donations(string $blood_type)
     {
-        /* Get all donations from database */
+        /* Get donations with the specified blood type from database */
         $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
         $donations = $donation_repo->findBy([
             'blood_type' => $blood_type
+        ]);
+
+        return $this->jsonify_donations_array($donations);
+    }
+
+    /**
+     * @Route("/available_donations/name", name="name_donations")
+     */
+    public function name_donations()
+    {
+        /* Get donation name from request body */
+        $request = Request::createFromGlobals();
+        $name = $request->request->get('name');
+
+        if (!$name) {
+            return $this->json([
+                'error' => 'Please specify donation name'
+            ]);
+        }
+
+        /* Get donations for the specified name from database */
+        $donation_repo = $this->getDoctrine()->getRepository(Donation::class);
+        $donations = $donation_repo->findBy([
+            'name' => $name
         ]);
 
         return $this->jsonify_donations_array($donations);
@@ -132,6 +156,7 @@ class DonationController extends AbstractController
                 'name' => $donation->getName(),
                 'requested_quantity' => $donation->getRequestedQuantity(),
                 'existing_quantity' => $donation->getExistingQuantity(),
+                'donations_count' => $donation->getDonationsCount(),
                 'hospital' => $donation->getHospital(),
                 'blood_type' => $donation->getBloodType(),
                 'creation_date' => $donation->getCreationDate(),
