@@ -186,6 +186,21 @@ class User
         return $this;
     }
 
+    public function getUserTypeInt() {
+        switch ($this->type) {
+            case 'admin':
+                return 1;
+            case 'centre':
+                return 2;
+            case 'doctor':
+                return 3;
+            case 'donor':
+                return 4;
+            default:
+                return -1;
+        }
+    }
+
     /**
      * @return Collection|Donation[]
      */

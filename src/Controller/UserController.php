@@ -160,7 +160,9 @@ class UserController extends AbstractController
             $em->flush();
 
             return $this->json([
-                'token' => $token
+                'token' => $token,
+                'username' => $user->getUsername(),
+                'user_type' => $user->getUserTypeInt()
             ]);
         } else {
             return $this->json([
