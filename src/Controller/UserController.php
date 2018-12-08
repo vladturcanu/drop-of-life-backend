@@ -7,6 +7,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\JsonRequestService;
 
 class UserController extends AbstractController
 {
@@ -16,13 +17,21 @@ class UserController extends AbstractController
     public function signup(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
 
-        $username = $request->request->get('username');
-        $email = $request->request->get('email');
-        $plain_pw = $request->request->get('password');
-        $type = $request->request->get('type');
-        $blood_type = $request->request->get('blood_type');
-        $hospital = $request->request->get('hospital');
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $username = $jsr->getArrayKey('username', $parameters);
+        $email = $jsr->getArrayKey('email', $parameters);
+        $plain_pw = $jsr->getArrayKey('password', $parameters);
+        $type = $jsr->getArrayKey('type', $parameters);
+        $blood_type = $jsr->getArrayKey('blood_type', $parameters);
+        $hospital = $jsr->getArrayKey('hospital', $parameters);
 
         /* Test username, email, password, type not empty */
         if (!$username) {
@@ -104,9 +113,17 @@ class UserController extends AbstractController
     public function login(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
 
-        $username = $request->request->get('username');
-        $password = $request->request->get('password');
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $username = $jsr->getArrayKey('username', $parameters);
+        $password = $jsr->getArrayKey('password', $parameters);
 
         /* Test username, email, password, type not empty */
         if (!$username) {
@@ -158,8 +175,16 @@ class UserController extends AbstractController
     public function logout_all(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
 
-        $token = $request->request->get('token');
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
 
         /* Test token not empty */
         if (!$token) {

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Donation;
 use App\Entity\User;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\JsonRequestService;
 
 class DonationController extends AbstractController
 {
@@ -17,11 +18,19 @@ class DonationController extends AbstractController
     public function add_donation(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
 
-        $token = $request->request->get('token');
-        $name = $request->request->get('name');
-        $requested_quantity = $request->request->get('requested_quantity');
-        $blood_type = $request->request->get('blood_type');
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $name = $jsr->getArrayKey('name', $parameters);
+        $requested_quantity = $jsr->getArrayKey('requested_quantity', $parameters);
+        $blood_type = $jsr->getArrayKey('blood_type', $parameters);
 
         if (!$token) {
             return $this->json([
@@ -84,13 +93,21 @@ class DonationController extends AbstractController
     public function edit_donation(EntityManagerInterface $em)
     {
         $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
 
-        $token = $request->request->get('token');
-        $donation_id = $request->request->get('donation_id');
-        $name = $request->request->get('name');
-        $requested_quantity = $request->request->get('requested_quantity');
-        $hospital = $request->request->get('hospital');
-        $blood_type = $request->request->get('blood_type');
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $donation_id = $jsr->getArrayKey('donation_id', $parameters);
+        $name = $jsr->getArrayKey('name', $parameters);
+        $requested_quantity = $jsr->getArrayKey('requested_quantity', $parameters);
+        $hospital = $jsr->getArrayKey('hospital', $parameters);
+        $blood_type = $jsr->getArrayKey('blood_type', $parameters);
 
         if (!$token) {
             return $this->json([
@@ -193,7 +210,16 @@ class DonationController extends AbstractController
     {
         /* Get hospital name from request body */
         $request = Request::createFromGlobals();
-        $hospital = $request->request->get('hospital');
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $hospital = $jsr->getArrayKey('hospital', $parameters);
 
         if (!$hospital) {
             return $this->json([
@@ -217,7 +243,16 @@ class DonationController extends AbstractController
     {
         /* Get donation name from request body */
         $request = Request::createFromGlobals();
-        $name = $request->request->get('name');
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $name = $jsr->getArrayKey('name', $parameters);
 
         if (!$name) {
             return $this->json([
@@ -239,14 +274,22 @@ class DonationController extends AbstractController
      */
     public function donate(EntityManagerInterface $em)
     {
-        /* TODO: Test this functionality! */
         $request = Request::createFromGlobals();
-        $token = $request->request->get('token');
-        $donation_id = $request->request->get('donation_id');
-        $quantity = $request->request->get('quantity');
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $donation_id = $jsr->getArrayKey('donation_id', $parameters);
+        $quantity = $jsr->getArrayKey('quantity', $parameters);
 
         /* Can specify a donor_id in post, if we are submitting a donation for another user */
-        $donor_id = $request->request->get('donor_id');
+        $donor_id = $jsr->getArrayKey('donor_id', $parameters);
 
         if (!$token) {
             return $this->json([
@@ -273,6 +316,10 @@ class DonationController extends AbstractController
                 'error' => 'Donation not found.'
             ]);
         }
+
+        return $this->json([
+            'error' => $donation->getName()
+        ]);
 
         /* Get the user associated to the token */
         $user_repo = $this->getDoctrine()->getRepository(User::class);
@@ -317,7 +364,7 @@ class DonationController extends AbstractController
 
         /* Increment the number of donations for this request */
         $donations_count = $donation->getDonationsCount();
-        $donations->setDonationsCount($donations_count + 1);
+        $donation->setDonationsCount($donations_count + 1);
 
         /* Write modifications to database */
         $em->persist($donation);
