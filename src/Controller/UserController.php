@@ -219,9 +219,9 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/get_users/", name="logout_all")
+     * @Route("/get_users/", name="get_users")
      */
-    public function get_users_by_type(EntityManagerInterface $em)
+    public function get_users_by_type()
     {
         $request = Request::createFromGlobals();
         $jsr = new JsonRequestService();
@@ -278,6 +278,140 @@ class UserController extends AbstractController
         }
 
         return $this->json($users);
+    }
+
+    /**
+     * @Route("/validate_user/", name="validate_user")
+     */
+    public function validate_user(EntityManagerInterface $em)
+    {
+        $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $username = $jsr->getArrayKey('username', $parameters);
+
+        /* Test token not empty */
+        if (!$token) {
+            return $this->json([
+                'error' => 'No token supplied'
+            ]);
+        }
+        if (!$username) {
+            return $this->json([
+                'error' => 'No username supplied'
+            ]);
+        }
+
+        /* Find logged user in database by token, to make sure the token is real (he's authorized) */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        if (!$user || $user->getType() != "admin") {
+            return $this->json([
+                'error' => 'Only administrators are authorized to view users.'
+            ]);
+        }
+        
+        $validated_user = $user_repo->findOneBy([
+            'username' => $username
+        ]);
+
+        if (!$validated_user) {
+            return $this->json([
+                'error' => 'User not found in database.'
+            ]);
+        }
+
+        if ($validated_user->getIsValid()) {
+            return $this->json([
+                'error' => 'User has already been validated.'
+            ]);
+        }
+
+        $validated_user->setIsValid(TRUE);
+        $em->persist($validated_user);
+        $em->flush();
+
+        return $this->json([
+            "message" => "User validated successfully"
+        ]);
+    }
+
+    /**
+     * @Route("/invalidate_user/", name="invalidate_user")
+     */
+    public function invalidate_user(EntityManagerInterface $em)
+    {
+        $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $username = $jsr->getArrayKey('username', $parameters);
+
+        /* Test token not empty */
+        if (!$token) {
+            return $this->json([
+                'error' => 'No token supplied'
+            ]);
+        }
+        if (!$username) {
+            return $this->json([
+                'error' => 'No username supplied'
+            ]);
+        }
+
+        /* Find logged user in database by token, to make sure the token is real (he's authorized) */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        if (!$user || $user->getType() != "admin") {
+            return $this->json([
+                'error' => 'Only administrators are authorized to view users.'
+            ]);
+        }
+        
+        $validated_user = $user_repo->findOneBy([
+            'username' => $username
+        ]);
+
+        if (!$validated_user) {
+            return $this->json([
+                'error' => 'User not found in database.'
+            ]);
+        }
+
+        if (!$validated_user->getIsValid()) {
+            return $this->json([
+                'error' => 'User has already been validated.'
+            ]);
+        }
+
+        $validated_user->setIsValid(FALSE);
+        $em->persist($validated_user);
+        $em->flush();
+
+        return $this->json([
+            "message" => "User invalidated successfully"
+        ]);
     }
 
     protected function generateRandomString($length = 20) {
