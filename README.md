@@ -214,6 +214,30 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
 
   **Return on success**
     * {'**message**': 'You have donated successfully!'}
+      
+* ### /validate_user/
+  **Role:** Validates a user. Must be logged in and must be an "admin".
+
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_.
+    * **username** - _mandatory_. Username of the user to be validated.
+
+  **Return on success**
+    * {'**message**': 'User validated successfully!'}
+      
+* ### /invalidate_user/
+  **Role:** Invalidates a user. Must be logged in and must be an "admin".
+
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_.
+    * **username** - _mandatory_. Username of the user to be invalidated.
+
+  **Return on success**
+    * {'**message**': 'User invalidated successfully!'}
     
 * ### /get_users/
   **Role:** Gets users from the database. User must be logged in and must be an "admin". Can specify "type" to select users by type (e.g.: **"type"**: **"doctor"**)
