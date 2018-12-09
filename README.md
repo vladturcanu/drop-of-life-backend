@@ -273,15 +273,14 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
       ```
     
 * ### /get_user_data/
-  **Role:** Gets user data from the database. Must be logged in and must be an "admin".
+  **Role:** Gets user data for the logged in user. Must be logged in.
   **Request type:** POST
 
   **Request body:**
-    * **token** - _mandatory_. The user token received when logging in.
-    * **username** - _mandatory_. Username of the user to be extracted.
+    * **token** - _mandatory_. The user token received when logging in.\
 
   **Return on success**
-    * JSON data of user, that looks like this:
+    * JSON data of the logged in user, that looks like this:
       ```json
       {
           "id": 11,
