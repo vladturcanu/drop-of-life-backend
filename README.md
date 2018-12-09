@@ -214,4 +214,37 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
 
   **Return on success**
     * {'**message**': 'You have donated successfully!'}
+    
+* ### /get_users/
+  **Role:** Gets users from the database. User must be logged in and must be an "admin". Can specify "type" to select users by type (e.g.: **"type"**: **"doctor"**)
+
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_. The user token received when logging in.
+    * **type** - _optional_. Type of the users to be extracted. One of **admin**, **center**, **doctor** or **donor**. String
+
+  **Return on success**
+    * JSON array of users, that looks like this:
+      ```json
+      [
+        {
+            "id": 1,
+            "username": "student",
+            "type": 3,
+            "email": "mail@example.com",
+            "blood_type": null,
+            "hospital": "Floreasca",
+            "is_valid": true,
+            "last_donation_date": {
+                "date": "2018-12-03 00:00:00.000000",
+                "timezone_type": 3,
+                "timezone": "Europe/Helsinki"
+            }
+        },
+        {
+          ...
+        }, ...
+      ]
+      ```
             
