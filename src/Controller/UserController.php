@@ -273,6 +273,71 @@ class UserController extends AbstractController
         return $this->json($users);
     }
 
+
+    /**
+     * @Route("/get_user_data/", name="get_user_data")
+     */
+    public function get_user_data()
+    {
+        $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getBearerToken($request);
+        $username = $jsr->getArrayKey('username', $parameters);
+
+        /* Test token not empty */
+        if (!$token) {
+            return $this->json([
+                'error' => 'No token supplied'
+            ]);
+        }
+        if (!$username) {
+            return $this->json([
+                'error' => 'No username supplied'
+            ]);
+        }
+
+        /* Find username in database by token, to make sure the token is real (he's authorized) */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        if (!$user || $user->getType() != "admin") {
+            return $this->json([
+                'error' => 'Only administrators are authorized to view users.'
+            ]);
+        }
+
+        $selected_user = $user_repo->findOneBy([
+            'username' => $username
+        ]);
+
+        if ($selected_user) {
+            return $this->json([
+                'id' => $selected_user->getId(),
+                'username' => $selected_user->getUsername(),
+                'type' => $selected_user->getUserTypeInt(),
+                'email' => $selected_user->getEmail(),
+                'blood_type' => $selected_user->getBloodType(),
+                'hospital' => $selected_user->getHospital(),
+                'is_valid' => $selected_user->getIsValid(),
+                'last_donation_date' => $selected_user->getLastDonationDate()
+            ]);
+        } else {
+            return $this->json([
+                'error' => 'Username not found in database.'
+            ]);
+        }
+    }
+
     /**
      * @Route("/validate_user/", name="validate_user")
      */
