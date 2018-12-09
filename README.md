@@ -271,4 +271,30 @@ Calling each of these routes will return a JSON. On error, the JSON will only co
         }, ...
       ]
       ```
+    
+* ### /get_user_data/
+  **Role:** Gets user data for the logged in user. Must be logged in.
+  **Request type:** POST
+
+  **Request body:**
+    * **token** - _mandatory_. The user token received when logging in.\
+
+  **Return on success**
+    * JSON data of the logged in user, that looks like this:
+      ```json
+      {
+          "id": 11,
+          "username": "gigel",
+          "type": 4,
+          "email": "gigel@example.com",
+          "blood_type": "AB+",
+          "hospital": null,
+          "is_valid": true,
+          "last_donation_date": {
+              "date": "2018-12-08 00:00:00.000000",
+              "timezone_type": 3,
+              "timezone": "Europe/Helsinki"
+          }
+      }
+      ```
             
