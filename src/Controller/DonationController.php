@@ -27,7 +27,7 @@ class DonationController extends AbstractController
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $name = $jsr->getArrayKey('name', $parameters);
         $requested_quantity = $jsr->getArrayKey('requested_quantity', $parameters);
         $blood_type = $jsr->getArrayKey('blood_type', $parameters);
@@ -102,7 +102,7 @@ class DonationController extends AbstractController
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $donation_id = $jsr->getArrayKey('donation_id', $parameters);
         $name = $jsr->getArrayKey('name', $parameters);
         $requested_quantity = $jsr->getArrayKey('requested_quantity', $parameters);
@@ -284,7 +284,7 @@ class DonationController extends AbstractController
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $donation_id = $jsr->getArrayKey('donation_id', $parameters);
         $quantity = $jsr->getArrayKey('quantity', $parameters);
 

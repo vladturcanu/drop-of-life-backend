@@ -28,6 +28,26 @@ class JsonRequestService
             }
 
             return $parameters;
+        } else if ($allowEmpty) {
+            return [];
+        } else {
+            return FALSE;
+        }
+    }
+
+    /**
+     * Get bearer token from the request headers if it exists.
+     * If the token exists and is valid, return the token in a string
+     * Else, return FALSE
+     */
+    public function getBearerToken($request) {
+        if ($header = $request->headers->get('authorization')) {
+            /* Token looks like this: "Bearer <token>". Extract the token */
+            if (strpos($header, 'Bearer ') != 0) {
+                return FALSE;
+            } else {
+                return substr($header, 7);
+            }
         } else {
             return FALSE;
         }

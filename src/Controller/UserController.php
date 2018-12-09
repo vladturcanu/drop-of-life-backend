@@ -180,14 +180,7 @@ class UserController extends AbstractController
         $request = Request::createFromGlobals();
         $jsr = new JsonRequestService();
 
-        $parameters = $jsr->getRequestBody($request);
-        if ($parameters === FALSE) {
-            return $this->json([
-                'error' => 'Empty or invalid request body.'
-            ]);
-        }
-
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
 
         /* Test token not empty */
         if (!$token) {
@@ -226,14 +219,14 @@ class UserController extends AbstractController
         $request = Request::createFromGlobals();
         $jsr = new JsonRequestService();
 
-        $parameters = $jsr->getRequestBody($request);
+        $parameters = $jsr->getRequestBody($request, TRUE);
         if ($parameters === FALSE) {
             return $this->json([
                 'error' => 'Empty or invalid request body.'
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $type = $jsr->getArrayKey('type', $parameters);
 
         /* Test token not empty */
@@ -295,7 +288,7 @@ class UserController extends AbstractController
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $username = $jsr->getArrayKey('username', $parameters);
 
         /* Test token not empty */
@@ -362,7 +355,7 @@ class UserController extends AbstractController
             ]);
         }
 
-        $token = $jsr->getArrayKey('token', $parameters);
+        $token = $jsr->getBearerToken($request);
         $username = $jsr->getArrayKey('username', $parameters);
 
         /* Test token not empty */
