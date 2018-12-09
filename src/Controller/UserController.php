@@ -13,7 +13,7 @@ class UserController extends AbstractController
 {
     /**
      * @Route("/signup", name="signup")
-     * @Route("/signup/", name="signup")
+     * @Route("/signup/", name="signup2")
      */
     public function signup(EntityManagerInterface $em)
     {
@@ -110,7 +110,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/login", name="login")
-     * @Route("/login/", name="login")
+     * @Route("/login/", name="login2")
      */
     public function login(EntityManagerInterface $em)
     {
@@ -176,7 +176,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/logout_all", name="logout_all")
-     * @Route("/logout_all/", name="logout_all")
+     * @Route("/logout_all/", name="logout_all2")
      */
     public function logout_all(EntityManagerInterface $em)
     {
@@ -216,7 +216,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/get_users", name="get_users")
-     * @Route("/get_users/", name="get_users")
+     * @Route("/get_users/", name="get_users2")
      */
     public function get_users_by_type()
     {
@@ -345,7 +345,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/validate_user", name="validate_user")
-     * @Route("/validate_user/", name="validate_user")
+     * @Route("/validate_user/", name="validate_user2")
      */
     public function validate_user(EntityManagerInterface $em)
     {
@@ -413,7 +413,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/invalidate_user", name="invalidate_user")
-     * @Route("/invalidate_user/", name="invalidate_user")
+     * @Route("/invalidate_user/", name="invalidate_user2")
      */
     public function invalidate_user(EntityManagerInterface $em)
     {
