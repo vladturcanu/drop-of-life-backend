@@ -14,6 +14,7 @@ class DonationController extends AbstractController
 {
     /**
      * @Route("/add_donation", name="add_donation")
+     * @Route("/add_donation/", name="add_donation")
      */
     public function add_donation(EntityManagerInterface $em)
     {
@@ -89,6 +90,7 @@ class DonationController extends AbstractController
 
     /**
      * @Route("/edit_donation", name="edit_donation")
+     * @Route("/edit_donation/", name="edit_donation")
      */
     public function edit_donation(EntityManagerInterface $em)
     {
@@ -179,6 +181,7 @@ class DonationController extends AbstractController
 
     /**
      * @Route("/available_donations", name="all_donations")
+     * @Route("/available_donations/", name="all_donations")
      */
     public function all_donations()
     {
@@ -271,6 +274,7 @@ class DonationController extends AbstractController
 
     /**
      * @Route("/donate", name="donate")
+     * @Route("/donate/", name="donate")
      */
     public function donate(EntityManagerInterface $em)
     {
