@@ -162,7 +162,8 @@ class UserController extends AbstractController
             return $this->json([
                 'token' => $token,
                 'username' => $user->getUsername(),
-                'user_type' => $user->getUserTypeInt()
+                'user_type' => $user->getUserTypeInt(),
+                'is_valid' => $user->getIsValid()
             ]);
         } else {
             return $this->json([
@@ -215,6 +216,68 @@ class UserController extends AbstractController
                 'error' => 'Error while logging out'
             ]);
         }
+    }
+
+    /**
+     * @Route("/get_users/", name="logout_all")
+     */
+    public function get_users_by_type(EntityManagerInterface $em)
+    {
+        $request = Request::createFromGlobals();
+        $jsr = new JsonRequestService();
+
+        $parameters = $jsr->getRequestBody($request);
+        if ($parameters === FALSE) {
+            return $this->json([
+                'error' => 'Empty or invalid request body.'
+            ]);
+        }
+
+        $token = $jsr->getArrayKey('token', $parameters);
+        $type = $jsr->getArrayKey('type', $parameters);
+
+        /* Test token not empty */
+        if (!$token) {
+            return $this->json([
+                'error' => 'No token supplied'
+            ]);
+        }
+
+        /* Find username in database by token, to make sure the token is real (he's authorized) */
+        $user_repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $user_repo->findOneBy([
+            'jwt' => $token
+        ]);
+
+        if (!$user || $user->getType() != "admin") {
+            return $this->json([
+                'error' => 'Only administrators are authorized to view users.'
+            ]);
+        }
+
+        if ($type) {
+            $user_list = $user_repo->findBy([
+                'type' => $type
+            ]);
+        } else {
+            $user_list = $user_repo->findAll();
+        }
+
+        $users = [];
+        foreach ($user_list as $user) {
+            array_push($users, [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+                'type' => $user->getUserTypeInt(),
+                'email' => $user->getEmail(),
+                'blood_type' => $user->getBloodType(),
+                'hospital' => $user->getHospital(),
+                'is_valid' => $user->getIsValid(),
+                'last_donation_date' => $user->getLastDonationDate()
+            ]);
+        }
+
+        return $this->json($users);
     }
 
     protected function generateRandomString($length = 20) {
