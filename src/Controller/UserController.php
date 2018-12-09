@@ -280,7 +280,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/get_user_data", name="get_user_data")
-     * @Route("/get_user_data/", name="get_user_data")
+     * @Route("/get_user_data/", name="get_user_data2")
      */
     public function get_user_data()
     {
